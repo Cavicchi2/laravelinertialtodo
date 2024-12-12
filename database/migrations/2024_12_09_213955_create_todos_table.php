@@ -6,25 +6,18 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
-    public function up(): void
+    public function up()
     {
-        Schema::create('todos', function (Blueprint $table) {
+        Schema::create('to_do_lists', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('users_id')->constrained('users');
-            $table->string('title');
-            $table->foreignId('to_do_items_id')->constrained();
+            $table->string('name');
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade'); // Add user_id column
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
-    public function down(): void
+    public function down()
     {
-        Schema::dropIfExists('todos');
+        Schema::dropIfExists('to_do_lists');
     }
 };

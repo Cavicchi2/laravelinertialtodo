@@ -1,76 +1,62 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
-import ToDoListGrid from '@/Components/ToDoListGrid.jsx';
+import ToDoListGroup from "@/Components/ToDoListGroup.jsx";
 
 export default function Dashboard() {
-    const gridCategoryMock = [
-        {
-            id: 0,
-            name: "Category A",
+    const [groups, setGroups] = useState([]);
+
+    useEffect(() => {
+        // Fetch groups for the authenticated user
+        const fetchGroups = async () => {
+            try {
+                const response = await fetch('/to-do-groups', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    },
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    setGroups(data.groups); // Set the groups to state
+                } else {
+                    throw new Error('Failed to fetch groups');
+                }
+            } catch (error) {
+                alert('Error fetching groups');
+            }
+        };
+
+        fetchGroups();
+    }, []); // Empty dependency array to run only once when the component mounts
+
+    const handleAddGroup = async () => {
+        const name = prompt('Enter a name for the new Group:');
+        if (!name) {
+            return;
         }
-    ];
 
-    // Initial mock entities - directly hardcoded for testing
-    const initialMockData = [
-        {
-            id: '0',
-            name: 'Task A',
-            description: 'Complete the first task.',
-            items: [
-                { id: '101', title: 'Finish writing report' },
-                { id: '102', title: 'Submit before 3 PM' },
-            ],
-        },
-        {
-            id: '1',
-            name: 'Task B',
-            description: 'Second task example.',
-            items: [
-                { id: '201', title: 'Call supplier' },
-                { id: '202', title: 'Place order' },
-            ],
-        },
-        {
-            id: '2',
-            name: 'Meeting Task',
-            description: 'Prepare for team meeting.',
-            items: [
-                { id: '301', title: 'Create presentation slides' },
-                { id: '302', title: 'Prepare meeting agenda' },
-            ],
-        },
-        {
-            id: '3',
-            name: 'Admin Task',
-            description: 'Handle administrative tasks.',
-            items: [
-                { id: '401', title: 'Check emails' },
-                { id: '402', title: 'Schedule meeting' },
-            ],
-        },
-    ];
+        try {
+            const response = await fetch('/to-do-groups', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                },
+                body: JSON.stringify({ name }),
+            });
 
-    const [mockData, setMockData] = useState(gridCategoryMock);
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
 
-    function mockFetch(index) {
-        return new Promise((resolve) => {
-            setTimeout(() => {
-                resolve(mockData[index]);
-            }, 500); // Simulate network delay
-        });
-    }
-
-    const handleAddGrid = () => {
-        const gridName = prompt('Enter a name for the new ToDoListGrid:');
-        if (gridName) {
-            const newGrid = {
-                id: mockData.length.toString(),
-                name: gridName,
-                description: 'Newly added ToDoListGrid.',
-                items: [],
-            };
-            setMockData((prevData) => [...prevData, newGrid]);
+            const data = await response.json();
+            alert(data.message);
+            setGroups((prevGroups) => [...prevGroups, data.groups]); // Add the new group to state
+        } catch (error) {
+            alert('Failed to create Group');
         }
     };
 
@@ -89,14 +75,14 @@ export default function Dashboard() {
                     <div className="overflow-hidden bg-white shadow-sm sm:rounded-lg">
                         <div className="p-6 text-gray-900 flex flex-col">
                             <button
-                                onClick={handleAddGrid}
+                                onClick={handleAddGroup}
                                 className="mb-6 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 flex-end"
                             >
-                                Add new List category
+                                Add new Group
                             </button>
-                            {mockData.map((grid) => (
-                                <div key={grid.id} className="mb-6">
-                                    <ToDoListGrid name={grid.name} entities={initialMockData} mockFetch={mockFetch}/>
+                            {groups?.map((group) => (
+                                <div key={group.id} className="mb-6">
+                                    <ToDoListGroup name={group.name} groupId={group.id} />
                                 </div>
                             ))}
                         </div>
@@ -104,6 +90,5 @@ export default function Dashboard() {
                 </div>
             </div>
         </AuthenticatedLayout>
-    )
-        ;
+    );
 }

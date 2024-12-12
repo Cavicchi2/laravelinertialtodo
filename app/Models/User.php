@@ -45,4 +45,16 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    // Define the relationship with ToDoGroup
+    public function toDoGroups()
+    {
+        return $this->hasMany(ToDoGroup::class);
+    }
+
+    // Define the relationship with ToDoList
+    public function toDoLists()
+    {
+        return $this->hasMany(ToDoList::class);
+    }
 }

@@ -13,7 +13,15 @@ return new class extends Migration
     {
         Schema::create('to_do_items', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('to_do_list_id');
+            $table->string('title');
+            $table->boolean('completed')->default(false);
             $table->timestamps();
+
+            $table->foreign('to_do_list_id')
+                ->references('id')
+                ->on('to_do_lists')
+                ->onDelete('cascade');
         });
     }
 

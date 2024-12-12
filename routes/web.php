@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ToDoListController;
+use App\Http\Controllers\ToDoGroupController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -23,5 +25,10 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+
+Route::post('/to-do-lists', [ToDoListController::class, 'store']);
+Route::post('/to-do-groups', [ToDoGroupController::class, 'store']);
+Route::get('/to-do-lists', [ToDoListController::class, 'index']);
+Route::get('/to-do-groups', [ToDoGroupController::class, 'index']);
 
 require __DIR__.'/auth.php';
