@@ -34,8 +34,6 @@ class ToDoGroupController extends Controller
         $userId = auth()->id();
         $toDoGroups = ToDoGroup::where('user_id', $userId)->get(); // Fetch ToDo groups for the user.
 
-//        dd($toDoGroups);
-
         return response()->json([
             'groups' => $toDoGroups,
         ]);

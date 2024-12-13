@@ -99,7 +99,7 @@ const ToDoListGroup = ({ name, groupId }) => {
             {modalOpen && (
                 <Modal show={modalOpen} onClose={handleCloseModal}>
                     {currentEntityKey ? (
-                        <ToDoListFull data={currentEntityKey} />
+                        <ToDoListFull list={currentEntityKey} />
                     ) : (
                         <p>Loading...</p>
                     )}

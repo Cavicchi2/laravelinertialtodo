@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ToDoListController;
 use App\Http\Controllers\ToDoGroupController;
+use App\Http\Controllers\ToDoItemController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -26,9 +27,13 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-Route::post('/to-do-lists', [ToDoListController::class, 'store']);
-Route::post('/to-do-groups', [ToDoGroupController::class, 'store']);
-Route::get('/to-do-lists', [ToDoListController::class, 'index']);
-Route::get('/to-do-groups', [ToDoGroupController::class, 'index']);
+Route::post('/to-do-lists', [ToDoListController::class, 'store'])->middleware(['auth', 'verified']);
+Route::post('/to-do-groups', [ToDoGroupController::class, 'store'])->middleware(['auth', 'verified']);
+Route::post('/to-do-items', [ToDoItemController::class, 'store'])->middleware(['auth', 'verified']);
+Route::get('/to-do-lists', [ToDoListController::class, 'index'])->middleware(['auth', 'verified']);
+Route::get('/to-do-groups', [ToDoGroupController::class, 'index'])->middleware(['auth', 'verified']);
+Route::get('/to-do-items', [ToDoItemController::class, 'index'])->middleware(['auth', 'verified']);
+
+Route::patch('/to-do-items/{id}/toggle', [ToDoItemController::class, 'toggleCompletion'])->middleware(['auth', 'verified']);
 
 require __DIR__.'/auth.php';
